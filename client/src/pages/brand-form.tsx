@@ -49,7 +49,25 @@ export default function BrandForm() {
 
   const mutation = useMutation({
     mutationFn: async (data: InsertBrand) => {
-      const res = await apiRequest("POST", "/api/brands", data);
+      // Ensure deliverables is properly structured before sending
+      const formData = {
+        ...data,
+        deliverables: {
+          ...data.deliverables,
+          // Convert any string input to proper structure
+          videoRequirements: typeof data.deliverables === 'string'
+            ? { count: 0, duration: '', style: '' }
+            : data.deliverables.videoRequirements,
+          socialMedia: typeof data.deliverables === 'string'
+            ? { platforms: [], requirements: '' }
+            : data.deliverables.socialMedia,
+          additionalRequirements: typeof data.deliverables === 'string'
+            ? data.deliverables
+            : data.deliverables.additionalRequirements
+        }
+      };
+
+      const res = await apiRequest("POST", "/api/brands", formData);
       return await res.json();
     },
     onSuccess: (brand) => {
@@ -152,14 +170,16 @@ export default function BrandForm() {
 - Any specific hashtags or mentions
 - Key messages to include`}
                           className="min-h-[200px]"
-                          {...field}
+                          value={typeof field.value === 'string' ? field.value : JSON.stringify(field.value, null, 2)}
                           onChange={(e) => {
                             try {
-                              const value = JSON.parse(e.target.value);
-                              field.onChange(value);
+                              const parsed = JSON.parse(e.target.value);
+                              field.onChange(parsed);
                             } catch {
+                              // If it's not valid JSON, treat it as additional requirements
                               field.onChange({
-                                ...field.value,
+                                videoRequirements: { count: 0, duration: '', style: '' },
+                                socialMedia: { platforms: [], requirements: '' },
                                 additionalRequirements: e.target.value,
                               });
                             }

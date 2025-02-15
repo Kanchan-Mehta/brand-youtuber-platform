@@ -54,8 +54,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
         try {
           formData.deliverables = JSON.parse(formData.deliverables);
         } catch {
-          formData.deliverables = { additionalRequirements: formData.deliverables };
+          // If parsing fails, create a structured object with the string as additionalRequirements
+          formData.deliverables = {
+            videoRequirements: { count: 0, duration: '', style: '' },
+            socialMedia: { platforms: [], requirements: '' },
+            additionalRequirements: formData.deliverables
+          };
         }
+      }
+
+      // Ensure the deliverables object has the correct structure
+      if (!formData.deliverables.videoRequirements) {
+        formData.deliverables.videoRequirements = { count: 0, duration: '', style: '' };
+      }
+      if (!formData.deliverables.socialMedia) {
+        formData.deliverables.socialMedia = { platforms: [], requirements: '' };
+      }
+      if (!formData.deliverables.additionalRequirements) {
+        formData.deliverables.additionalRequirements = '';
       }
 
       const validatedData = insertBrandSchema.parse(formData);
