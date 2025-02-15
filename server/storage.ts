@@ -7,8 +7,10 @@ const MemoryStore = createMemoryStore(session);
 export interface IStorage {
   getCreator(id: number): Promise<Creator | undefined>;
   createCreator(creator: InsertCreator): Promise<Creator>;
+  getAllCreators(): Promise<Creator[]>;
   getBrand(id: number): Promise<Brand | undefined>;
   createBrand(brand: InsertBrand): Promise<Brand>;
+  getAllBrands(): Promise<Brand[]>;
   sessionStore: session.Store;
 }
 
@@ -27,6 +29,14 @@ export class MemStorage implements IStorage {
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000, // prune expired entries every 24h
     });
+  }
+
+  async getAllCreators(): Promise<Creator[]> {
+    return Array.from(this.creators.values());
+  }
+
+  async getAllBrands(): Promise<Brand[]> {
+    return Array.from(this.brands.values());
   }
 
   async getCreator(id: number): Promise<Creator | undefined> {

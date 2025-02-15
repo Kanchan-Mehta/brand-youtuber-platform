@@ -105,6 +105,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(brand);
   });
 
+  // Get all creators
+  app.get("/api/creators", async (_req, res) => {
+    const creators = await storage.getAllCreators();
+    res.json(creators);
+  });
+
+  // Get all brands
+  app.get("/api/brands", async (_req, res) => {
+    const brands = await storage.getAllBrands();
+    res.json(brands);
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
