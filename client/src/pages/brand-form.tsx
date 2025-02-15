@@ -6,22 +6,44 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useLocation } from "wouter";
 
+const CAMPAIGN_TYPES = [
+  "Product Review",
+  "Sponsored Content",
+  "Brand Integration",
+  "Tutorial/How-To",
+  "Unboxing",
+  "Brand Ambassador",
+  "Other"
+];
+
 export default function BrandForm() {
   const { toast } = useToast();
   const [, setLocation] = useLocation();
-  
+
   const form = useForm<InsertBrand>({
     resolver: zodResolver(insertBrandSchema),
     defaultValues: {
       industry: "",
       campaignType: "",
       targetAudience: "",
-      deliverables: {},
+      deliverables: {
+        videoRequirements: {
+          count: 0,
+          duration: "",
+          style: "",
+        },
+        socialMedia: {
+          platforms: [],
+          requirements: "",
+        },
+        additionalRequirements: "",
+      },
     },
   });
 
@@ -55,65 +77,100 @@ export default function BrandForm() {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit((data) => mutation.mutate(data))} className="space-y-6">
-              <FormField
-                control={form.control}
-                name="industry"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Industry</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g. Eco-Friendly Tech" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {/* Basic Information */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium">Basic Information</h3>
+                <FormField
+                  control={form.control}
+                  name="industry"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Industry</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g. Eco-Friendly Tech" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="campaignType"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Campaign Type</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g. Product Review" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="campaignType"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Campaign Type</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select campaign type" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {CAMPAIGN_TYPES.map((type) => (
+                            <SelectItem key={type} value={type.toLowerCase()}>
+                              {type}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="targetAudience"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Target Audience</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g. 18-34 (50% male, 50% female)" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="targetAudience"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Target Audience</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g. 18-34 (50% male, 50% female)" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
-              <FormField
-                control={form.control}
-                name="deliverables"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Deliverables</FormLabel>
-                    <FormControl>
-                      <Textarea 
-                        placeholder="Specify campaign requirements (e.g. 1 video, 90 seconds, 2 Instagram stories)"
-                        {...field}
-                        onChange={(e) => field.onChange(JSON.parse(e.target.value))}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {/* Deliverables */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium">Campaign Deliverables</h3>
+                <FormField
+                  control={form.control}
+                  name="deliverables"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Deliverables Requirements</FormLabel>
+                      <FormControl>
+                        <Textarea 
+                          placeholder={`Specify your campaign requirements in detail:
+- Number and duration of videos
+- Type of content (review, tutorial, etc.)
+- Additional social media posts
+- Any specific hashtags or mentions
+- Key messages to include`}
+                          className="min-h-[200px]"
+                          {...field}
+                          onChange={(e) => {
+                            try {
+                              const value = JSON.parse(e.target.value);
+                              field.onChange(value);
+                            } catch {
+                              field.onChange({
+                                ...field.value,
+                                additionalRequirements: e.target.value,
+                              });
+                            }
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
               <Button type="submit" className="w-full" disabled={mutation.isPending}>
                 {mutation.isPending ? "Creating..." : "Create Profile"}
