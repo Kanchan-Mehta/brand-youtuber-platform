@@ -1,0 +1,73 @@
+Overview:
+We need to create a standalone feature (using Replit) that allows both creators and brands to sign up and fill out a detailed profile. This profile will act as the creator’s “business card” that they can link in their YouTube channel description, enabling brands to see verified channel data and decide whether to reach out for collaboration. The primary goal is to empower creators with a simple, self-service form that captures all key metrics—many of which can be derived from YouTube Studio analytics—while informing them if any field requires manual calculation.
+
+1. Creator Profile
+
+Implement a form where creators can enter the following information:
+
+Core Profile Data:
+
+Name/Channel Name: Text input
+Niche: Dropdown or text input (e.g., tech, beauty, gaming)
+Location: Text input for country/city
+Contact Email: Email input
+Channel Performance:
+
+Subscribers: Numeric input (this value is directly available in YouTube Studio)
+Average Views/Video (last 30 days): Numeric input
+Note: YouTube Studio provides total views over a period; if an average is not directly available, include a tooltip advising the creator to manually calculate the average (total views divided by number of videos in that period).
+Engagement Rate: Numeric input or calculated field
+Note: Engagement rate is calculated as (likes + comments) ÷ views. Since this exact figure might not be directly provided, add a help note instructing the creator on how to compute it using data from their YouTube Studio analytics.
+Top 3 Videos:
+For each video, include fields for:
+Video Link (URL input)
+View Count (numeric input)
+Audience Demographics:
+
+Age Group: Input or selection (e.g., 18–24, 25–34)
+Gender Split: Input (e.g., "60% male, 40% female")
+Top Audience Locations: Provide three separate inputs for countries/cities
+Content Style:
+
+Content Format: Text input or dropdown (e.g., tutorials, reviews, vlogs)
+Brand Alignment: Text input (e.g., "eco-friendly startups", "gaming hardware")
+Posting Frequency: Text input (e.g., "2 videos/week")
+Trust & Safety:
+
+Verification Badge: File upload (creator uploads a screenshot from YouTube Studio analytics for manual verification)
+Fraud Report History: Auto-generated field set to "0 scams reported" for the MVP
+Optional but Killer Additions:
+
+Past Collaborations: Text input or multi-line input to list brands and include links
+Portfolio: URL input for a media kit or Google Drive folder
+Creator USP: Text input (e.g., "My audience trusts my honest reviews")
+Additional Instruction for Creators:
+Next to any field that involves a calculation (e.g., Average Views/Video, Engagement Rate), display a clear tooltip or help text that explains:
+
+How to find the required numbers in YouTube Studio analytics.
+The simple calculation needed (if not directly provided).
+For example: “If your YouTube Studio doesn’t show the average views per video, calculate it by dividing your total views in the last 30 days by the number of videos you uploaded in that period.”
+2. Brand Profile
+
+Implement a separate form for brands with the following fields:
+
+Industry: Text input (example: "Eco-Friendly Tech")
+Campaign Type: Text input (example: "Product Review")
+Target Audience: Text input (example: "18–34 (50% male, 50% female)")
+Deliverables: Text input or a structured form where brands can specify details like:
+Number of videos (e.g., 1 video, 90 seconds)
+Social media commitments (e.g., 2 Instagram stories)
+Development Considerations:
+
+User Experience:
+Ensure the form is user-friendly and mobile-responsive. Use clear labels and include placeholder text or tooltips where calculations or additional explanations are necessary.
+
+Data Validation:
+Validate inputs (e.g., email format, numeric values for subscribers and view counts) and provide real-time feedback.
+
+Integration with YouTube Studio Data:
+While most fields will be filled manually by the creator based on their YouTube Studio analytics, design the interface so that any potential future integration (via API or automated data import) can be accommodated.
+
+Security:
+As this data represents key business metrics, ensure that file uploads (for verification badges) and data storage follow secure practices.
+
