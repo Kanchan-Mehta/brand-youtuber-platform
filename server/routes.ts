@@ -7,7 +7,10 @@ import path from "path";
 
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  limits: { 
+    fileSize: 10 * 1024 * 1024, // 10MB limit
+    fieldSize: 10 * 1024 * 1024 // 10MB field size limit
+  },
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -25,7 +28,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Handle file upload
       if (req.file) {
-        formData.verificationBadge = req.file.buffer.toString("base64");
+        const base64Image = req.file.buffer.toString('base64');
+        formData.verificationBadge = `data:${req.file.mimetype};base64,${base64Image}`;
       }
 
       // Convert string numbers to actual numbers
@@ -47,7 +51,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Parse JSON strings back to objects
       if (typeof formData.deliverables === "string") {
-        formData.deliverables = JSON.parse(formData.deliverables);
+        try {
+          formData.deliverables = JSON.parse(formData.deliverables);
+        } catch {
+          formData.deliverables = { additionalRequirements: formData.deliverables };
+        }
       }
 
       const validatedData = insertBrandSchema.parse(formData);

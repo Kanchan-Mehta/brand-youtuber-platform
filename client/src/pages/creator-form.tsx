@@ -59,10 +59,26 @@ export default function CreatorForm() {
   const mutation = useMutation({
     mutationFn: async (data: InsertCreator) => {
       const formData = new FormData();
+
+      // Handle file upload separately
+      if (data.verificationBadge && data.verificationBadge.startsWith('data:')) {
+        const base64Data = data.verificationBadge.split(',')[1];
+        const byteCharacters = atob(base64Data);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: 'image/png' });
+        formData.append('verificationBadge', blob, 'verification.png');
+      }
+
+      // Handle other form fields
       Object.entries(data).forEach(([key, value]) => {
-        if (key === "topVideos" || key === "demographics") {
+        if (key === 'verificationBadge') return; // Skip as we handled it above
+        if (key === 'topVideos' || key === 'demographics') {
           formData.append(key, JSON.stringify(value));
-        } else {
+        } else if (value !== null && value !== undefined) {
           formData.append(key, value.toString());
         }
       });
@@ -73,7 +89,8 @@ export default function CreatorForm() {
       });
 
       if (!res.ok) {
-        throw new Error("Failed to create profile");
+        const error = await res.json();
+        throw new Error(error.error || "Failed to create profile");
       }
 
       return res.json();
