@@ -7,6 +7,7 @@ import HomePage from "@/pages/home-page";
 import CreatorForm from "@/pages/creator-form";
 import BrandForm from "@/pages/brand-form";
 import CreatorProfile from "@/pages/creator-profile";
+import BrandProfile from "@/pages/brand-profile";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -17,6 +18,9 @@ function Router() {
       <Route path="/brand-form" component={BrandForm} />
       <Route path="/creator-profile/:id" component={({ params }) => (
         <CreatorProfile id={params.id} />
+      )} />
+      <Route path="/brand-profile/:id" component={({ params }) => (
+        <BrandProfile id={params.id} />
       )} />
       <Route component={NotFound} />
     </Switch>

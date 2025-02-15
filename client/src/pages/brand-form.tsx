@@ -52,12 +52,12 @@ export default function BrandForm() {
       const res = await apiRequest("POST", "/api/brands", data);
       return await res.json();
     },
-    onSuccess: () => {
+    onSuccess: (brand) => {
       toast({
         title: "Profile Created",
         description: "Your brand profile has been successfully created.",
       });
-      setLocation("/");
+      setLocation(`/brand-profile/${brand.id}`);
     },
     onError: (error) => {
       toast({
@@ -144,7 +144,7 @@ export default function BrandForm() {
                     <FormItem>
                       <FormLabel>Deliverables Requirements</FormLabel>
                       <FormControl>
-                        <Textarea 
+                        <Textarea
                           placeholder={`Specify your campaign requirements in detail:
 - Number and duration of videos
 - Type of content (review, tutorial, etc.)
