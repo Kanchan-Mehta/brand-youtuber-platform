@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import HomePage from "@/pages/home-page";
 import CreatorForm from "@/pages/creator-form";
 import BrandForm from "@/pages/brand-form";
+import CreatorProfile from "@/pages/creator-profile";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -14,6 +15,9 @@ function Router() {
       <Route path="/" component={HomePage} />
       <Route path="/creator-form" component={CreatorForm} />
       <Route path="/brand-form" component={BrandForm} />
+      <Route path="/creator-profile/:id" component={({ params }) => (
+        <CreatorProfile id={params.id} />
+      )} />
       <Route component={NotFound} />
     </Switch>
   );

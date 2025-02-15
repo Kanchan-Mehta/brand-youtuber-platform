@@ -78,12 +78,12 @@ export default function CreatorForm() {
 
       return res.json();
     },
-    onSuccess: () => {
+    onSuccess: (creator) => {
       toast({
         title: "Profile Created",
         description: "Your creator profile has been successfully created.",
       });
-      setLocation("/");
+      setLocation(`/creator-profile/${creator.id}`);
     },
     onError: (error) => {
       toast({
@@ -239,7 +239,7 @@ export default function CreatorForm() {
                     <FormItem>
                       <FormLabel>Demographics Information</FormLabel>
                       <FormControl>
-                        <Textarea 
+                        <Textarea
                           placeholder="Age groups, gender split, and top locations"
                           {...field}
                           onChange={(e) => {
@@ -363,8 +363,8 @@ export default function CreatorForm() {
                         <FormTooltip content="Upload a screenshot from YouTube Studio analytics" />
                       </FormLabel>
                       <FormControl>
-                        <Input 
-                          type="file" 
+                        <Input
+                          type="file"
                           accept="image/*"
                           onChange={(e) => {
                             const file = e.target.files?.[0];
