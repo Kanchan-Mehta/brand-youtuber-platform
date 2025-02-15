@@ -1,10 +1,15 @@
 import { InsertCreator, Creator, InsertBrand, Brand } from "@shared/schema";
+import session from "express-session";
+import createMemoryStore from "memorystore";
+
+const MemoryStore = createMemoryStore(session);
 
 export interface IStorage {
   getCreator(id: number): Promise<Creator | undefined>;
   createCreator(creator: InsertCreator): Promise<Creator>;
   getBrand(id: number): Promise<Brand | undefined>;
   createBrand(brand: InsertBrand): Promise<Brand>;
+  sessionStore: session.Store;
 }
 
 export class MemStorage implements IStorage {
@@ -12,12 +17,16 @@ export class MemStorage implements IStorage {
   private brands: Map<number, Brand>;
   private creatorId: number;
   private brandId: number;
+  public sessionStore: session.Store;
 
   constructor() {
     this.creators = new Map();
     this.brands = new Map();
     this.creatorId = 1;
     this.brandId = 1;
+    this.sessionStore = new MemoryStore({
+      checkPeriod: 86400000, // prune expired entries every 24h
+    });
   }
 
   async getCreator(id: number): Promise<Creator | undefined> {
@@ -26,7 +35,13 @@ export class MemStorage implements IStorage {
 
   async createCreator(creator: InsertCreator): Promise<Creator> {
     const id = this.creatorId++;
-    const newCreator = { ...creator, id };
+    const newCreator: Creator = {
+      ...creator,
+      id,
+      pastCollaborations: creator.pastCollaborations || null,
+      portfolio: creator.portfolio || null,
+      creatorUsp: creator.creatorUsp || null,
+    };
     this.creators.set(id, newCreator);
     return newCreator;
   }
@@ -37,7 +52,7 @@ export class MemStorage implements IStorage {
 
   async createBrand(brand: InsertBrand): Promise<Brand> {
     const id = this.brandId++;
-    const newBrand = { ...brand, id };
+    const newBrand: Brand = { ...brand, id };
     this.brands.set(id, newBrand);
     return newBrand;
   }
